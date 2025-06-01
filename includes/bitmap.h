@@ -43,6 +43,18 @@ typedef struct {
   BYTE Red;
 } BITMAPCOLOR;
 
-void BITMAP_Create(DWORD width, DWORD height, const char *filename);
+typedef struct {
+  BITMAPFILEHEADER Header;
+  BITMAPINFOHEADER Info;
+  BYTE *Pixels;
+} BITMAP;
+
+BITMAP BITMAP_init(DWORD width, DWORD height);
+
+void BITMAP_set_pixel(BITMAP bitmap, DWORD x, DWORD y, BITMAPCOLOR color);
+BITMAPCOLOR BITMAP_get_pixel(BITMAP bitmap, DWORD x, DWORD y);
+
+void BITMAP_save(BITMAP bitmap,  const char *path);
+void BITMAP_free(BITMAP bitmap);
 
 #endif
