@@ -40,6 +40,35 @@ BITMAP BITMAP_init(DWORD width, DWORD height) {
   return bitmap;
 }
 
+BITMAP BITMAP_open(const char *path) {
+  BITMAP bitmap;
+
+  FILE *fp = fopen(path, "rb");
+  if (!fp) {
+    errno = 5;
+    return bitmap;
+  }
+
+  fread(&bitmap.Header, sizeof(BITMAPFILEHEADER), 1, fp);
+  fread(&bitmap.Info, sizeof(BITMAPINFOHEADER), 1, fp);
+
+  DWORD pixels_row_bytes = sizeof(BITMAPCOLOR) * bitmap.Info.Width;
+  DWORD pixels_row_padding = pixels_row_bytes % 4;
+  DWORD pixels_array_bytes = (pixels_row_bytes + pixels_row_padding) * bitmap.Info.Height;
+
+  bitmap.Pixels = (BYTE *) malloc(pixels_row_bytes);
+  if (!bitmap.Pixels) {
+    errno = 6;
+    fclose(fp);
+    return bitmap;
+  }
+
+  fread(bitmap.Pixels, pixels_array_bytes, 1, fp);
+  fclose(fp);
+
+  return bitmap;
+}
+
 void BITMAP_set_pixel(BITMAP bitmap, DWORD x, DWORD y, BITMAPCOLOR color) {
   if (x >= bitmap.Info.Width || y >= bitmap.Info.Height) {
     errno = 2;
