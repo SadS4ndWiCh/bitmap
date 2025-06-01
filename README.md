@@ -2,6 +2,19 @@
 
 Some bitmap image manipulation.
 
+## API
+
+```c
+BITMAP BITMAP_init(DWORD width, DWORD height);
+BITMAP BITMAP_open(const char *path);
+
+void BITMAP_set_pixel(BITMAP bitmap, DWORD x, DWORD y, BITMAPCOLOR color);
+BITMAPCOLOR BITMAP_get_pixel(BITMAP bitmap, DWORD x, DWORD y);
+
+void BITMAP_save(BITMAP bitmap,  const char *path);
+void BITMAP_free(BITMAP bitmap);
+```
+
 ## Usage
 
 ```
