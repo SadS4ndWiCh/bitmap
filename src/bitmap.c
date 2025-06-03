@@ -56,7 +56,7 @@ BITMAP BITMAP_open(const char *path) {
   DWORD pixels_row_padding = pixels_row_bytes % 4;
   DWORD pixels_array_bytes = (pixels_row_bytes + pixels_row_padding) * bitmap.Info.Height;
 
-  bitmap.Pixels = (BYTE *) malloc(pixels_row_bytes);
+  bitmap.Pixels = (BYTE *) malloc(pixels_array_bytes);
   if (!bitmap.Pixels) {
     errno = 6;
     fclose(fp);
