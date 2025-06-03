@@ -48,6 +48,29 @@ void create(DWORD width, DWORD height, char *path) {
   BITMAP_free(bitmap);
 }
 
+void grayscale(char *path) {
+  errno = 0;
+
+  BITMAP bitmap = BITMAP_open(path);
+  if (errno != 0) {
+    printf("failed to open BITMAP image file.");
+    return;
+  }
+
+  for (DWORD y = 0; y < bitmap.Info.Height; y++) {
+    for (DWORD x = 0; x < bitmap.Info.Width; x++) {
+      BITMAPCOLOR color = BITMAP_get_pixel(bitmap, x, y);
+
+      BYTE gray = floor(0.299 * color.Red + 0.587 * color.Green + 0.114 * color.Blue);
+
+      BITMAP_set_pixel(bitmap, x, y, (BITMAPCOLOR) { gray, gray, gray });
+    }
+  }
+
+  BITMAP_save(bitmap, path);
+  BITMAP_free(bitmap);
+}
+
 int main(int argc, char **argv) {
   if (argc < 2) {
     printf(
@@ -55,9 +78,11 @@ int main(int argc, char **argv) {
         "Available commands:\n"
         "   decode <FILE>                  - Decode the BITMAP image and view the data.\n"
         "   create <FILE> <WIDTH> <HEIGHT> - Create a monochromatic grayscale BITMAP image.\n\n"
+        "   grayscale <FILE>               - Transform the colors to grayscale.\n"
         "Examples:\n"
         "   bitmap decode sample.bmp\n"
         "   bitmap create created_image.bmp 200 200\n"
+        "   bitmap grayscale sample.bmp\n"
     );
     return 0;
   }
@@ -79,6 +104,13 @@ int main(int argc, char **argv) {
     DWORD height = atoi(argv[4]);
 
     create(width, height, argv[2]);
+  } else if (strcmp(argv[1], "grayscale") == 0) {
+    if (argc < 3) {
+      printf("usage: bitmap grayscale <FILE>");
+      return 0;
+    }
+
+    grayscale(argv[2]);
   }
 
   return 0;
